@@ -1,2 +1,2 @@
 # BottleFlip
-Rui Li, what a god
+Inspired by Rui Li and his amazing bottle flip skillz
