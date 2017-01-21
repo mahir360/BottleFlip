@@ -1,2 +1,2 @@
-# BottleFlip
-Rui Li, what a god
+# BottleFlip, A Catchy Game
+A GAME INSPIRED BY RUI
