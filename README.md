@@ -1,2 +1,2 @@
 # BottleFlip
-RUI LI CUNT
+Rui Li, what a god
