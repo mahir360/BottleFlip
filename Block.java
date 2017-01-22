@@ -3,8 +3,9 @@ import java.util.*;
 
 public class Block{
 
-	static double speed = 1.2;
+	static double speed = 1.8;
 	static ArrayList<Block> all = new ArrayList<Block>();
+	static ArrayList<Block> fallen = new ArrayList<Block>();
 	double x, y;
 	Color color;
 
@@ -57,15 +58,17 @@ public class Block{
 		boolean removed = false;
 		for(int i = 0; i < all.size(); i++){
 			Block b = all.get(i);
+			if(fallen.contains(b)) b.y = b.y * 1.007;
 			b.y += speed;
 			if(b.y > 1210){
 				removed = true;
+				if(fallen.contains(b)) removed = false;
 				all.remove(i);
 				i--;
 			}
 		}
 		if(removed) {
-			for(int j = 0; j < Math.random()*2; j++){
+			for(int j = 0; j < Math.random()*2+1; j++){
 				generate(-10);
 			}
 		}
