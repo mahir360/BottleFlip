@@ -6,18 +6,20 @@ import java.awt.event.*;
 public class BluestRed implements KeyListener{
 
 	static JFrame frame;
+	static boolean run = false;
 
 	public static void init(){
 		frame = new JFrame();
-		frame.setSize(1200,1000);
+		frame.setSize(1200,900);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(new BluestRed());
+		frame.setTitle("On Tilt");
 		for(int i = 0; i <= 1200; i+= 50){
-			for(int j = 0; j < Math.random()*2; j++) Block.generate(i);	
+			for(int j = 0; j < Math.random()*1+1; j++) Block.generate(i);	
 		}
-		Player.player1 = new Player(50,50,"alex");
-		Player.player2 = new Player(350,50,"ekim");
+		Player.player1 = new Player(75,50,"P1");
+		Player.player2 = new Player(1125,50,"P2");
 		Player.player1.color = Color.red;
 		Player.player2.color = Color.blue;
 	}
@@ -26,6 +28,7 @@ public class BluestRed implements KeyListener{
 		Player.player1.update();
 		Player.player2.update();
 		Player.collide();
+		Player.hit();
 		Block.update();
 		frame.add(new Canvas());
 		frame.setVisible(true);
@@ -40,7 +43,7 @@ public class BluestRed implements KeyListener{
 		public void paintComponent(Graphics g2){
 			Graphics2D g = (Graphics2D) g2;
 				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setColor(Color.black);
+			g.setColor(new Color(25,25,30));
 			g.fillRect(0,0,frame.getWidth(),frame.getHeight());
 			for(int i = 0; i < Block.all.size(); i++){
 				Block b = Block.all.get(i);
@@ -48,32 +51,89 @@ public class BluestRed implements KeyListener{
 				g.fillRect((int)b.x+4,(int)b.y+4,50,8);
 			}
 			g.setColor(Player.player1.color);
-			g.fillOval((int)(Player.player1.x-5),(int)(Player.player1.y-5),10,10);
+			g.fillOval((int)(Player.player1.x-Player.player1.size),(int)(Player.player1.y-Player.player1.size),Player.player1.size*2,Player.player1.size*2);
+			g.drawString(Player.player1.name,(int)Player.player1.x+Player.player1.size*2,(int)Player.player1.y+Player.player1.size*2);
 			g.setColor(Player.player2.color);
-			g.fillOval((int)(Player.player2.x-5),(int)(Player.player2.y-5),10,10);
+			g.fillOval((int)(Player.player2.x-Player.player2.size),(int)(Player.player2.y-Player.player2.size),Player.player2.size*2,Player.player2.size*2);
+			g.drawString(Player.player2.name,(int)Player.player2.x+Player.player2.size*2,(int)Player.player2.y+Player.player2.size*2);
+		}
+	}
+
+	public static class Lost extends JPanel{
+		public void paintComponent(Graphics g2){
+			Graphics2D g = (Graphics2D) g2;
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setColor(Color.DARK_GRAY);
+			g.fillRect(0,0,frame.getWidth(),frame.getHeight());
+			g.setColor(Color.white);
+			if(Player.player1.lost) g.drawString("P2 WON!",500,500);		
+			else if(Player.player2.lost) g.drawString("P1 WON!",500,500);		
+		}
+	}
+
+	public static class Menu extends JPanel{
+		public void paintComponent(Graphics g2){
+			Graphics2D g = (Graphics2D) g2;
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setColor(Color.DARK_GRAY);
+			g.fillRect(0,0,frame.getWidth(),frame.getHeight());
+			g.setColor(Color.white);
+			g.drawString("INSTRUCTIONS:",400,100);
+			g.drawString("#1. Land on a platform with same color as yourself to grow bigger",200,200);
+			g.drawString("#2. Landing on a platform with different color reduces your size",200,300);
+			g.drawString("#3. The larger player will knock the other down during contact",200,400);
+			g.drawString("#4. Dont fall, or else you lose",200,500);
+			g.drawString("#5. P1 controls are s and d, P2 controls k and l",200,600);
+			g.drawString("#6. Press r to insert coin and begin the game!",200,700);
 		}
 	}
 		
 	public static void main(String[] args){
 		init();
 		while(true){
-			update();
-			//if(Player.lost()) break;
+			frame.add(new Menu());
+			frame.setVisible(true);
+			while(!run){
+				try{Thread.sleep(2);}catch(Exception e){}
+			}
+			while(true){
+				update();
+				Player.lost();
+				if(Player.player1.lost || Player.player2.lost){
+					frame.add(new Lost());
+					frame.setVisible(true);
+					try{Thread.sleep(3000);}catch(Exception e){}
+					Block.all = new ArrayList<Block>();
+					Block.fallen = new ArrayList<Block>();
+					for(int i = 0; i <= 1200; i+= 50){
+						for(int j = 0; j < Math.random()*1+1; j++) Block.generate(i);	
+					}
+					Player.player1 = new Player(75,50,"P1");
+					Player.player2 = new Player(1125,50,"P2");
+					Player.player1.color = Color.red;
+					Player.player2.color = Color.blue;
+					run = false;
+					break;
+				}
+			}
 		}
 	}
 
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_S){
-			Player.player1.shift += -2.6;
+			Player.player1.shift += -3.6;
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_D){
-			Player.player1.shift += 2.6;
+			Player.player1.shift += 3.6;
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_K){
-			Player.player2.shift += -2.6;
+			Player.player2.shift += -3.6;
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_L){
-			Player.player2.shift += 2.6;
+			Player.player2.shift += 3.6;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_R){
+			run = !run;
 		}
 	}
 	public void keyReleased(KeyEvent e) {
