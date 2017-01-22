@@ -102,7 +102,7 @@ public class BluestRed implements KeyListener{
 				if(Player.player1.lost || Player.player2.lost){
 					frame.add(new Lost());
 					frame.setVisible(true);
-					try{Thread.sleep(3000);}catch(Exception e){}
+					try{Thread.sleep(1000);}catch(Exception e){}
 					Block.all = new ArrayList<Block>();
 					Block.fallen = new ArrayList<Block>();
 					for(int i = 0; i <= 1200; i+= 50){
